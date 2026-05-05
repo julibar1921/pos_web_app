@@ -3,11 +3,11 @@
         Ajouter un Utilisateur
     </x-slot>
 
-    <div class="glass-card p-6 max-w-2xl mx-auto">
+    <div class="modern-card max-w-2xl mx-auto">
         @if (count($errors) > 0)
-            <div class="bg-red-500 bg-opacity-50 text-white p-4 rounded mb-4">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
                 <strong>Oups!</strong> Il y a des problèmes avec vos entrées.<br><br>
-                <ul>
+                <ul class="list-disc pl-5 mt-2">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -18,38 +18,42 @@
         <form method="POST" action="{{ route('users.store') }}">
             @csrf
             
-            <div class="glass-input-group">
+            <div class="modern-input-group">
                 <i class="fa fa-user"></i>
                 <input type="text" name="name" placeholder="Nom" required>
             </div>
 
-            <div class="glass-input-group">
+            <div class="modern-input-group">
                 <i class="fa fa-envelope"></i>
                 <input type="email" name="email" placeholder="Email" required>
             </div>
 
-            <div class="glass-input-group">
+            <div class="modern-input-group">
                 <i class="fa fa-lock"></i>
                 <input type="password" name="password" placeholder="Mot de passe" required>
             </div>
 
-            <div class="glass-input-group">
+            <div class="modern-input-group">
                 <i class="fa fa-lock"></i>
                 <input type="password" name="confirm-password" placeholder="Confirmer le mot de passe" required>
             </div>
 
             <div class="mb-6">
-                <strong class="text-white mb-2 block">Rôle:</strong>
-                <select name="roles[]" multiple class="w-full bg-transparent border-b border-white text-white p-2 outline-none" style="background: rgba(0,0,0,0.5);">
+                <strong class="text-gray-700 mb-2 block">Rôles:</strong>
+                <select name="roles[]" multiple class="w-full bg-gray-50 border border-gray-200 text-gray-900 p-2 rounded-lg outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition h-32">
                     @foreach($roles as $role)
-                        <option value="{{ $role }}">{{ $role }}</option>
+                        <option value="{{ $role }}" class="p-2 hover:bg-indigo-50">{{ $role }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="glass-btn">Soumettre</button>
-                <a class="text-gray-300 mt-4 block underline hover:text-white" href="{{ route('users.index') }}"> Retour</a>
+            <div class="flex justify-between items-center mt-8">
+                <a class="text-gray-500 hover:text-gray-800 transition" href="{{ route('users.index') }}">
+                    <i class="fa fa-arrow-left mr-1"></i> Retour
+                </a>
+                <button type="submit" class="modern-btn">
+                    <i class="fa fa-save mr-2"></i> Soumettre
+                </button>
             </div>
         </form>
     </div>

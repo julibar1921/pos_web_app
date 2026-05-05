@@ -15,14 +15,14 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased glass-theme">
+    <body class="font-sans antialiased bg-[#f5f5f5] text-gray-900">
         <div class="min-h-screen">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @if (isset($header))
-                <header class="glass-card m-4">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-white font-bold text-xl">
+                <header class="bg-white shadow-sm mb-4 mx-4 rounded-xl">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-gray-800 font-bold text-xl">
                         {{ $header }}
                     </div>
                 </header>

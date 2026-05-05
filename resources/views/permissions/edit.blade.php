@@ -3,11 +3,11 @@
         Modifier la Permission
     </x-slot>
 
-    <div class="glass-card p-6 max-w-2xl mx-auto">
+    <div class="modern-card max-w-2xl mx-auto">
         @if (count($errors) > 0)
-            <div class="bg-red-500 bg-opacity-50 text-white p-4 rounded mb-4">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
                 <strong>Oups!</strong> Il y a des problèmes avec vos entrées.<br><br>
-                <ul>
+                <ul class="list-disc pl-5 mt-2">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -19,14 +19,18 @@
             @csrf
             @method('PUT')
             
-            <div class="glass-input-group">
+            <div class="modern-input-group">
                 <i class="fa fa-key"></i>
                 <input type="text" name="name" value="{{ $permission->name }}" placeholder="Nom de la Permission" required>
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="glass-btn">Soumettre</button>
-                <a class="text-gray-300 mt-4 block underline hover:text-white" href="{{ route('permissions.index') }}"> Retour</a>
+            <div class="flex justify-between items-center mt-8">
+                <a class="text-gray-500 hover:text-gray-800 transition" href="{{ route('permissions.index') }}">
+                    <i class="fa fa-arrow-left mr-1"></i> Retour
+                </a>
+                <button type="submit" class="modern-btn">
+                    <i class="fa fa-save mr-2"></i> Soumettre
+                </button>
             </div>
         </form>
     </div>

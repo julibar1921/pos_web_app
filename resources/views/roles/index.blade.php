@@ -3,22 +3,22 @@
         Gestion des Rôles
     </x-slot>
 
-    <div class="glass-card p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl text-white">Liste des Rôles</h2>
-            <a href="{{ route('roles.create') }}" class="glass-btn text-center" style="width: auto; padding: 8px 16px;">
-                <i class="fa fa-plus"></i> Ajouter
+    <div class="modern-card">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Liste des Rôles</h2>
+            <a href="{{ route('roles.create') }}" class="modern-btn">
+                <i class="fa fa-plus mr-2"></i> Ajouter
             </a>
         </div>
 
         @if ($message = Session::get('success'))
-            <div class="bg-green-500 bg-opacity-50 text-white p-4 rounded mb-4">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
                 {{ $message }}
             </div>
         @endif
 
         <div class="overflow-x-auto">
-            <table class="glass-table">
+            <table class="modern-table">
                 <thead>
                     <tr>
                         <th>N°</th>
@@ -30,13 +30,13 @@
                     @foreach ($roles as $key => $role)
                         <tr>
                             <td>{{ ++$key }}</td>
-                            <td>{{ $role->name }}</td>
+                            <td class="font-medium text-gray-900">{{ $role->name }}</td>
                             <td>
-                                <a class="text-blue-300 hover:text-white mr-2" href="{{ route('roles.edit',$role->id) }}"><i class="fa fa-edit"></i> Modifier</a>
+                                <a class="text-indigo-600 hover:text-indigo-900 mr-3" href="{{ route('roles.edit',$role->id) }}"><i class="fa fa-edit"></i> Modifier</a>
                                 <form action="{{ route('roles.destroy', $role->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-300 hover:text-white" onclick="return confirm('Êtes-vous sûr ?')"><i class="fa fa-trash"></i> Supprimer</button>
+                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rôle ?')"><i class="fa fa-trash"></i> Supprimer</button>
                                 </form>
                             </td>
                         </tr>
