@@ -1,0 +1,45 @@
+<x-app-layout>
+    <x-slot name="header">
+        Modifier le Rôle
+    </x-slot>
+
+    <div class="glass-card p-6 max-w-2xl mx-auto">
+        @if (count($errors) > 0)
+            <div class="bg-red-500 bg-opacity-50 text-white p-4 rounded mb-4">
+                <strong>Oups!</strong> Il y a des problèmes avec vos entrées.<br><br>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('roles.update', $role->id) }}">
+            @csrf
+            @method('PUT')
+            
+            <div class="glass-input-group">
+                <i class="fa fa-tag"></i>
+                <input type="text" name="name" value="{{ $role->name }}" placeholder="Nom du Rôle" required>
+            </div>
+
+            <div class="mb-6">
+                <strong class="text-white mb-2 block">Permissions:</strong>
+                <div class="grid grid-cols-2 gap-2 text-white">
+                    @foreach($permission as $value)
+                        <label>
+                            <input type="checkbox" name="permission[]" value="{{ $value->id }}" {{ in_array($value->id, $rolePermissions) ? 'checked' : '' }} class="mr-2">
+                            {{ $value->name }}
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="glass-btn">Soumettre</button>
+                <a class="text-gray-300 mt-4 block underline hover:text-white" href="{{ route('roles.index') }}"> Retour</a>
+            </div>
+        </form>
+    </div>
+</x-app-layout>
