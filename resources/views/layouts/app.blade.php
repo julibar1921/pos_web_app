@@ -14,6 +14,8 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <link rel="icon" type="image/png" href="{{ Storage::url(\App\Models\Setting::get('logo')) }}">
     </head>
     <body class="font-sans antialiased bg-[#f5f5f5] text-gray-900">
         <div class="min-h-screen">

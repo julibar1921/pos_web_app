@@ -1,0 +1,138 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('products.index') }}" class="p-2 bg-gray-100 rounded-lg text-gray-500 hover:bg-gray-200 transition-colors">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <span>{{ __('Ajouter un Produit') }}</span>
+        </div>
+    </x-slot>
+
+    <div class="py-6">
+        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+            @csrf
+            
+            <!-- Left Side: Basic Info -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-50 bg-gradient-to-r from-white to-gray-50">
+                        <h3 class="text-lg font-bold text-gray-800">Informations du Produit</h3>
+                    </div>
+                    <div class="p-8 space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-600 ml-1">Nom du produit</label>
+                            <input type="text" name="name" required
+                                class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50"
+                                placeholder="Ex: Coca-Cola 33cl, Pain de mie...">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-600 ml-1">Catégorie</label>
+                                <select name="category_id" required
+                                    class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50">
+                                    <option value="">Sélectionner une catégorie</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-600 ml-1">Code-barres (Optionnel)</label>
+                                <div class="relative">
+                                    <input type="text" name="barcode"
+                                        class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50 pl-10"
+                                        placeholder="Scanner ou saisir...">
+                                    <div class="absolute left-3 top-3.5 text-gray-400">
+                                        <i class="fas fa-barcode"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-600 ml-1">Unité de Mesure</label>
+                                <select name="unit" required
+                                    class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50 font-bold">
+                                    <option value="unité">Unité (pièce)</option>
+                                    <option value="kg">Kilogramme (Kg)</option>
+                                    <option value="g">Gramme (g)</option>
+                                    <option value="l">Litre (L)</option>
+                                    <option value="ml">Millilitre (ml)</option>
+                                    <option value="pack">Pack / Lot</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-50 bg-gradient-to-r from-white to-gray-50">
+                        <h3 class="text-lg font-bold text-gray-800">Prix & Stock</h3>
+                    </div>
+                    <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-600 ml-1">Prix d'Achat</label>
+                            <input type="number" step="0.01" name="purchase_price" required
+                                class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50"
+                                placeholder="0.00">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-600 ml-1">Prix de Vente</label>
+                            <input type="number" step="0.01" name="selling_price" required
+                                class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50"
+                                placeholder="0.00">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-600 ml-1">Quantité en Stock</label>
+                            <input type="number" name="stock_quantity" required
+                                class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50"
+                                placeholder="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Image -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-50 bg-gradient-to-r from-white to-gray-50">
+                        <h3 class="text-lg font-bold text-gray-800">Image du Produit</h3>
+                    </div>
+                    <div class="p-8 text-center" x-data="{ photoName: null, photoPreview: null }">
+                        <input type="file" class="hidden" x-ref="photo" name="image"
+                            @change="
+                                photoName = $event.target.files[0].name;
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    photoPreview = e.target.result;
+                                };
+                                reader.readAsDataURL($event.target.files[0]);
+                            ">
+
+                        <div class="relative inline-block group">
+                            <div class="w-full aspect-square min-w-[200px] rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50 group-hover:border-emerald-300 transition-all">
+                                <template x-if="!photoPreview">
+                                    <i class="fas fa-image text-5xl text-gray-300"></i>
+                                </template>
+                                <template x-if="photoPreview">
+                                    <img :src="photoPreview" class="w-full h-full object-cover">
+                                </template>
+                            </div>
+                            <button type="button" class="absolute -bottom-3 -right-3 w-12 h-12 bg-white shadow-xl rounded-full border border-gray-100 text-emerald-500 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all scale-100 active:scale-90"
+                                @click="$refs.photo.click()">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <p class="mt-6 text-xs text-gray-400">Cliquez sur l'icône pour ajouter une photo.</p>
+                    </div>
+                </div>
+
+                <div class="sticky top-6">
+                    <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:shadow-emerald-300 transition-all flex items-center justify-center gap-3 active:scale-95">
+                        <i class="fas fa-save"></i>
+                        Enregistrer le Produit
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</x-app-layout>
