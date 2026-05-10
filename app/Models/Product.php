@@ -18,7 +18,12 @@ class Product extends Model
         'selling_price', 
         'stock_quantity', 
         'unit',
-        'image_path'
+        'image_path',
+        'is_stockable'
+    ];
+
+    protected $casts = [
+        'is_stockable' => 'boolean',
     ];
 
     public function category()

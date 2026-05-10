@@ -40,15 +40,15 @@
                                 <div class="space-y-3">
                                     <div class="flex justify-between text-sm font-bold">
                                         <span class="text-gray-500">Ventes Espèces (Auj) :</span>
-                                        <span class="text-emerald-600">+{{ number_format($cashSales, 2) }}</span>
+                                        <span class="text-emerald-600">+{{ number_format($cashSales, 3) }}</span>
                                     </div>
                                     <div class="flex justify-between text-sm font-bold">
                                         <span class="text-gray-500">Dépenses (Auj) :</span>
-                                        <span class="text-rose-500">-{{ number_format($expenses, 2) }}</span>
+                                        <span class="text-rose-500">-{{ number_format($expenses, 3) }}</span>
                                     </div>
                                     <div class="pt-3 border-t border-gray-200 flex justify-between font-black">
                                         <span class="text-gray-800 uppercase text-[10px] tracking-widest">Attendu en Caisse :</span>
-                                        <span class="text-indigo-600 text-lg">{{ number_format($expectedCash, 2) }} {{ \App\Models\Setting::get('currency', 'DA') }}</span>
+                                        <span class="text-indigo-600 text-lg">{{ number_format($expectedCash, 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
 
                             <div>
                                 <x-input-label for="notes" value="Observations / Notes" />
-                                <textarea name="notes" rows="3" class="mt-1 block w-full rounded-2xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="Ex: Manque de 50 DA du à une erreur de rendu..."></textarea>
+                                <textarea name="notes" rows="3" class="mt-1 block w-full rounded-2xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="Ex: Manque de 50 DT du à une erreur de rendu..."></textarea>
                             </div>
 
                             <button type="submit" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition duration-300">
@@ -100,14 +100,14 @@
                                         {{ $closing->closed_at->format('d/m/Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800">
-                                        {{ number_format($closing->expected_amount, 2) }}
+                                        {{ number_format($closing->expected_amount, 3) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-indigo-600">
-                                        {{ number_format($closing->actual_amount, 2) }}
+                                        {{ number_format($closing->actual_amount, 3) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase {{ $closing->difference == 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }}">
-                                            {{ $closing->difference > 0 ? '+' : '' }}{{ number_format($closing->difference, 2) }}
+                                            {{ $closing->difference > 0 ? '+' : '' }}{{ number_format($closing->difference, 3) }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

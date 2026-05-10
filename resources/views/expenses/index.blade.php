@@ -56,7 +56,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-bold text-rose-600">
-                                    {{ number_format($expense->amount, 2) }} {{ \App\Models\Setting::get('currency', 'DA') }}
+                                    {{ number_format($expense->amount, 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right">

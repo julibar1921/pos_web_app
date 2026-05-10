@@ -86,7 +86,7 @@ class CustomerController extends Controller
             $customer->decrement('balance', $request->amount);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Remboursement de ' . number_format($request->amount, 2) . ' enregistré !');
+            return redirect()->back()->with('success', 'Remboursement de ' . number_format($request->amount, 3) . ' enregistré !');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Erreur : ' . $e->getMessage());

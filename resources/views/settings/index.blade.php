@@ -57,7 +57,7 @@
                                 <select name="currency" class="w-full rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-200 transition-all px-4 py-3 bg-gray-50/50">
                                     <option value="EUR" {{ \App\Models\Setting::get('currency') == 'EUR' ? 'selected' : '' }}>Euro (€)</option>
                                     <option value="USD" {{ \App\Models\Setting::get('currency') == 'USD' ? 'selected' : '' }}>Dollar ($)</option>
-                                    <option value="DZD" {{ \App\Models\Setting::get('currency') == 'DZD' ? 'selected' : '' }}>Dinar (DA)</option>
+                                    <option value="DT" {{ \App\Models\Setting::get('currency') == 'DT' ? 'selected' : '' }}>Dinar Tunisien (DT)</option>
                                     <option value="MAD" {{ \App\Models\Setting::get('currency') == 'MAD' ? 'selected' : '' }}>Dirham (DH)</option>
                                 </select>
                             </div>
@@ -221,13 +221,15 @@
                                 <i class="fas fa-file-import"></i>
                                 Importation Catalogue
                             </h3>
-                            <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4" onsubmit="return validateImport()">
                                 @csrf
-                                <div class="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center">
-                                    <input type="file" name="csv_file" class="hidden" id="csv_import" required accept=".csv">
+                                <div class="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center" id="csv-drop-zone">
+                                    <input type="file" name="csv_file" class="hidden" id="csv_import" accept=".csv"
+                                        onchange="document.getElementById('csv-filename').textContent = this.files[0]?.name ?? 'Aucun fichier choisi'">
                                     <label for="csv_import" class="cursor-pointer block">
                                         <i class="fas fa-cloud-upload-alt text-2xl text-indigo-400 mb-2"></i>
                                         <div class="text-[10px] font-bold text-gray-600">Choisir un fichier .CSV</div>
+                                        <div id="csv-filename" class="text-[9px] text-indigo-500 mt-1 font-semibold">Aucun fichier choisi</div>
                                         <div class="text-[8px] text-gray-400 mt-1">Format: Nom, Code, P.Achat, P.Vente, Stock, Catégorie</div>
                                     </label>
                                 </div>
@@ -235,6 +237,16 @@
                                     LANCER L'IMPORTATION
                                 </button>
                             </form>
+                            <script>
+                                function validateImport() {
+                                    const file = document.getElementById('csv_import');
+                                    if (!file.value) {
+                                        alert('Veuillez sélectionner un fichier CSV avant de lancer l\'importation.');
+                                        return false;
+                                    }
+                                    return true;
+                                }
+                            </script>
                         </div>
                         
                         <p class="text-center mt-4 text-xs text-gray-500 px-4">

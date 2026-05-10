@@ -20,7 +20,7 @@
             <div class="bg-rose-50 p-6 rounded-2xl border border-rose-100">
                 <div class="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-1">Dette Actuelle</div>
                 <div class="text-3xl font-black text-rose-600">
-                    {{ number_format($customer->balance, 2) }} {{ \App\Models\Setting::get('currency', 'DT') }}
+                    {{ number_format($customer->balance, 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}
                 </div>
                 <div class="text-[10px] text-rose-400 mt-1 italic">Dernier mouvement: {{ $customer->updated_at->format('d/m/Y') }}</div>
             </div>
@@ -28,7 +28,7 @@
             <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
                 <div class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Total Remboursé</div>
                 <div class="text-3xl font-black text-emerald-600">
-                    {{ number_format($repayments->sum('amount'), 2) }} {{ \App\Models\Setting::get('currency', 'DT') }}
+                    {{ number_format($repayments->sum('amount'), 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}
                 </div>
                 <div class="text-[10px] text-emerald-400 mt-1 italic">Sur {{ $repayments->count() }} versements</div>
             </div>
@@ -69,7 +69,7 @@
                                         {{ $repayment->user->name }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-black text-emerald-600">
-                                        + {{ number_format($repayment->amount, 2) }}
+                                        + {{ number_format($repayment->amount, 3) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 py-1 bg-gray-100 text-gray-500 rounded text-[10px] font-bold uppercase tracking-widest">
@@ -112,7 +112,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $order->user->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-black text-rose-600">
-                                        - {{ number_format($order->total_amount, 2) }}
+                                        - {{ number_format($order->total_amount, 3) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <a href="{{ route('orders.print', $order) }}" target="_blank" class="text-indigo-500 hover:text-indigo-700">

@@ -17,21 +17,20 @@
 
         <link rel="icon" type="image/png" href="{{ Storage::url(\App\Models\Setting::get('logo')) }}">
     </head>
-    <body class="font-sans antialiased bg-[#f5f5f5] text-gray-900">
+    <body class="font-sans antialiased bg-[#f5f5f5] text-gray-900" x-data="{}"  >
         <div class="min-h-screen">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @if (isset($header))
                 <header class="bg-white shadow-sm mb-4 mx-4 rounded-xl">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-gray-800 font-bold text-xl">
+                    <div class="w-full py-4 px-6 text-gray-800 font-bold text-xl">
                         {{ $header }}
                     </div>
                 </header>
             @endif
 
-            <!-- Page Content -->
-            <main class="p-4 max-w-7xl mx-auto">
+            <main class="px-6 pb-6 w-full">
                 {{ $slot }}
             </main>
         </div>

@@ -66,9 +66,9 @@
 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="p-6 border-b border-gray-50 bg-gradient-to-r from-white to-gray-50">
-                        <h3 class="text-lg font-bold text-gray-800">Prix & Stock</h3>
+                        <h3 class="text-lg font-bold text-gray-800">Prix</h3>
                     </div>
-                    <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-gray-600 ml-1">Prix d'Achat</label>
                             <input type="number" step="0.01" name="purchase_price" required
@@ -81,11 +81,17 @@
                                 class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50"
                                 placeholder="0.00">
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-gray-600 ml-1">Quantité en Stock</label>
-                            <input type="number" name="stock_quantity" required
-                                class="w-full rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-200 transition-all px-4 py-3 bg-gray-50/50"
-                                placeholder="0">
+                    </div>
+                    <div class="px-8 pb-6">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">Gestion du stock</h4>
+                                <p class="text-xs text-gray-500 mt-0.5">Désactivez pour les services ou produits non quantifiables</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_stockable" value="1" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
                         </div>
                     </div>
                 </div>

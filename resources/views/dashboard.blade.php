@@ -38,7 +38,7 @@
             <div class="bg-indigo-600 rounded-3xl p-6 shadow-lg shadow-indigo-100 relative overflow-hidden group hover:bg-indigo-700 transition-all">
                 <div class="relative z-10 text-white">
                     <div class="text-[10px] font-bold text-indigo-200 uppercase tracking-wider mb-1">Profit Net (Mois)</div>
-                    <div class="text-2xl font-black">{{ number_format($salesThisMonth - $expensesThisMonth, 2) }} {{ \App\Models\Setting::get('currency', 'DT') }}</div>
+                    <div class="text-2xl font-black">{{ number_format($salesThisMonth - $expensesThisMonth, 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}</div>
                     <div class="mt-2 flex items-center text-[10px] font-bold text-indigo-100">
                         <i class="fas fa-wallet mr-1"></i> Performance {{ now()->translatedFormat('F') }}
                     </div>
@@ -71,7 +71,7 @@
             <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-all">
                 <div class="relative z-10 text-rose-600">
                     <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Dettes Clients</div>
-                    <div class="text-2xl font-black">{{ number_format(\App\Models\Customer::sum('balance'), 2) }} {{ \App\Models\Setting::get('currency', 'DT') }}</div>
+                    <div class="text-2xl font-black">{{ number_format(\App\Models\Customer::sum('balance'), 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}</div>
                     <div class="mt-2 flex items-center text-[10px] font-bold text-rose-400">
                         <i class="fas fa-hand-holding-usd mr-1"></i> Total à recouvrer
                     </div>
@@ -82,7 +82,7 @@
             <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-all">
                 <div class="relative z-10">
                     <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Dépenses (Mois)</div>
-                    <div class="text-2xl font-black text-gray-800">{{ number_format(\App\Models\Expense::whereMonth('created_at', now()->month)->sum('amount'), 2) }} {{ \App\Models\Setting::get('currency', 'DT') }}</div>
+                    <div class="text-2xl font-black text-gray-800">{{ number_format(\App\Models\Expense::whereMonth('created_at', now()->month)->sum('amount'), 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}</div>
                     <div class="mt-2 flex items-center text-[10px] font-bold text-gray-400">
                         <i class="fas fa-file-invoice-dollar mr-1"></i> {{ now()->translatedFormat('F') }}
                     </div>

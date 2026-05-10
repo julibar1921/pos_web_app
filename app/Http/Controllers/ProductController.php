@@ -34,33 +34,26 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255',
-            'barcode' => 'nullable|string|unique:products,barcode',
-            'selling_price' => 'required|numeric|min:0',
+            'category_id'    => 'required|exists:categories,id',
+            'name'           => 'required|string|max:255',
+            'barcode'        => 'nullable|string|unique:products,barcode',
+            'selling_price'  => 'required|numeric|min:0',
             'purchase_price' => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'image' => 'nullable|image|max:2048',
+            'unit'           => 'required|string',
+            'image'          => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['image', 'stock_quantity']);
+        $data['stock_quantity'] = 0; // Stock always starts at 0 — adjust via stock module
+        $data['is_stockable'] = $request->has('is_stockable');
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('products', 'public');
         }
 
-        $product = Product::create($data);
+        Product::create($data);
 
-        // Record initial stock movement
-        StockMovement::create([
-            'product_id' => $product->id,
-            'user_id' => Auth::id(),
-            'quantity' => $request->stock_quantity,
-            'type' => 'restock',
-            'notes' => 'Stock initial à la création du produit',
-        ]);
-
-        return redirect()->route('products.index')->with('success', 'Produit ajouté avec succès !');
+        return redirect()->route('products.index')->with('success', 'Produit ajouté avec succès ! Utilisez le module Stock pour approvisionner.');
     }
 
     public function edit(Product $product)
@@ -81,6 +74,7 @@ class ProductController extends Controller
         ]);
 
         $data = $request->all();
+        $data['is_stockable'] = $request->has('is_stockable');
 
         if ($request->hasFile('image')) {
             if ($product->image_path) {

@@ -15,37 +15,78 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // All permissions used by controllers
         $permissions = [
-           'role-list',
-           'role-create',
-           'role-edit',
-           'role-delete',
-           'user-list',
-           'user-create',
-           'user-edit',
-           'user-delete',
-           'permission-list',
-           'permission-create',
-           'permission-edit',
-           'permission-delete'
+            // Categories
+            'view categories',
+            'create categories',
+            'edit categories',
+            'delete categories',
+            // Products
+            'view products',
+            'create products',
+            'edit products',
+            'delete products',
+            // Settings
+            'view settings',
+            'edit settings',
+            // POS & Orders
+            'access pos',
+            'view orders',
+            'delete orders',
+            // Customers
+            'view customers',
+            'create customers',
+            'edit customers',
+            'delete customers',
+            // Expenses
+            'view expenses',
+            'create expenses',
+            'delete expenses',
+            // Suppliers
+            'view suppliers',
+            'create suppliers',
+            'edit suppliers',
+            'delete suppliers',
+            // Stock
+            'view stock',
+            'edit stock',
         ];
-      
+
         foreach ($permissions as $permission) {
-             Permission::create(['name' => $permission]);
+            Permission::updateOrCreate(
+                ['name' => $permission],
+                ['guard_name' => 'web']
+            );
         }
 
-        $user = User::create([
-            'name' => 'Admin', 
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('12345678')
+        // Create admin role and give all permissions
+        $adminRole = Role::updateOrCreate(['name' => 'admin'], ['guard_name' => 'web']);
+        $adminRole->syncPermissions(Permission::all());
+
+        // Create vendeur role with limited permissions
+        $vendeurRole = Role::updateOrCreate(['name' => 'vendeur'], ['guard_name' => 'web']);
+        $vendeurRole->syncPermissions([
+            'access pos',
+            'view orders',
+            'view products',
+            'view customers',
+            'create customers',
+            'edit customers',
         ]);
-      
-        $role = Role::create(['name' => 'Admin']);
-       
-        $permissions = Permission::pluck('id','id')->all();
-     
-        $role->syncPermissions($permissions);
-       
-        $user->assignRole([$role->id]);
+
+        // Create admin user
+        $user = User::updateOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name'     => 'Admin',
+                'password' => bcrypt('12345678'),
+            ]
+        );
+
+        $user->syncRoles(['admin']);
+
+        // Seed settings
+        $this->call(SettingSeeder::class);
     }
 }

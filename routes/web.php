@@ -46,9 +46,13 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/pos', [App\Http\Controllers\OrderController::class, 'index'])->name('pos.index');
     Route::post('/orders', [App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders-today', [App\Http\Controllers\OrderController::class, 'todaySales'])->name('orders.today');
+    Route::post('/orders/{order}/refund', [App\Http\Controllers\OrderController::class, 'refund'])->name('orders.refund');
+    Route::get('/orders/refunds', [App\Http\Controllers\OrderController::class, 'refundsIndex'])->name('orders.refunds');
     Route::get('/orders/{order}/print', [App\Http\Controllers\OrderController::class, 'print'])->name('orders.print');
     Route::get('/orders-history', [App\Http\Controllers\OrderController::class, 'history'])->name('orders.history');
     Route::get('/orders/{order}/invoice', [App\Http\Controllers\OrderController::class, 'invoice'])->name('orders.invoice');
+    Route::get('/reports/sales', [App\Http\Controllers\OrderController::class, 'salesReport'])->name('reports.sales');
 
     Route::get('/stock', [App\Http\Controllers\StockController::class, 'index'])->name('stock.index');
     Route::get('/stock/restock', [App\Http\Controllers\StockController::class, 'restockAssistant'])->name('stock.restock');

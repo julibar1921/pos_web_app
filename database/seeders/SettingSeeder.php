@@ -17,7 +17,7 @@ class SettingSeeder extends Seeder
             ['key' => 'company_email', 'value' => 'contact@epicerie.com', 'group' => 'contact'],
             ['key' => 'company_phone', 'value' => '+213 555 00 00 00', 'group' => 'contact'],
             ['key' => 'company_address', 'value' => '123 Rue de la Liberté, Alger', 'group' => 'contact'],
-            ['key' => 'currency', 'value' => 'DZD', 'group' => 'general'],
+            ['key' => 'currency', 'value' => 'DT', 'group' => 'general'],
             ['key' => 'tax_number', 'value' => '000123456789', 'group' => 'general'],
             ['key' => 'footer_text', 'value' => 'Merci de votre confiance ! À bientôt.', 'group' => 'receipt'],
         ];

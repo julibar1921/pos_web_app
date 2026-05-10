@@ -71,7 +71,7 @@
     <button class="no-print" onclick="window.print()">IMPRIMER</button>
 
     <div class="name">{{ $product->name }}</div>
-    <div class="price">{{ number_format($product->selling_price, 2) }} {{ \App\Models\Setting::get('currency', 'DA') }}</div>
+    <div class="price">{{ number_format($product->selling_price, 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}</div>
     
     <svg id="barcode"></svg>
 

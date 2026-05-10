@@ -12,13 +12,43 @@ class StockController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:view products'); // Reuse product permissions
+        $this->middleware('permission:view products')->only(['index', 'restockAssistant']);
+        $this->middleware('role:admin')->only(['adjust']); // Only admin can adjust stock
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $movements = StockMovement::with(['product', 'user'])->latest()->paginate(20);
-        return view('stock.index', compact('movements'));
+        $query = StockMovement::with(['product', 'user'])->latest();
+
+        // Filter by product name
+        if ($request->filled('product')) {
+            $query->whereHas('product', fn($q) =>
+                $q->where('name', 'like', '%' . $request->product . '%')
+            );
+        }
+
+        // Filter by user
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Filter by movement type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $movements = $query->paginate(20)->withQueryString();
+        $users = \App\Models\User::orderBy('name')->get();
+
+        return view('stock.index', compact('movements', 'users'));
     }
 
     public function restockAssistant()
@@ -36,9 +66,9 @@ class StockController extends Controller
     public function adjust(Request $request, Product $product)
     {
         $request->validate([
-            'quantity' => 'required|numeric', // Can be negative
-            'type' => 'required|in:restock,adjustment,damage,return',
-            'notes' => 'nullable|string',
+            'quantity' => 'required|numeric|not_in:0',
+            'type'     => 'required|in:restock,adjustment,damage,return,sale',
+            'notes'    => 'required|string|max:500',
         ]);
 
         try {

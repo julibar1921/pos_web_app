@@ -67,7 +67,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right font-bold text-gray-800">
-                                {{ number_format($product->purchase_price, 2) }} {{ \App\Models\Setting::get('currency', 'DT') }}
+                                {{ number_format($product->purchase_price, 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}
                             </td>
                         </tr>
                         @endforeach

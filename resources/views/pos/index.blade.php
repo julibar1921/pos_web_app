@@ -5,10 +5,11 @@
             <!-- Section GAUCHE: Produits & Recherche -->
             <div class="flex-1 flex flex-col min-w-0">
                 <!-- Barre de Recherche & Filtres -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4 space-y-4">
+                <div class="bg-white p-4 rounded-2xl mb-4 space-y-4" style="border: 1.5px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15,23,42,0.08), 0 1px 3px rgba(15,23,42,0.06);">
                     <div class="relative flex gap-2">
                         <div class="relative flex-1">
                             <input type="text" x-model="search" @input.debounce.300ms="filterProducts()"
+                                @keydown.enter.prevent="handleBarcodeEnter()"
                                 class="w-full rounded-xl border-gray-100 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-200 transition-all pl-12 py-3"
                                 placeholder="Rechercher un produit ou scanner un code-barres...">
                             <div class="absolute left-4 top-3.5 text-gray-400">
@@ -17,6 +18,17 @@
                         </div>
                         <button @click="showHelpModal = true" class="w-12 h-12 rounded-xl bg-gray-100 text-gray-400 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center" title="Aide (F1)">
                             <i class="fas fa-keyboard"></i>
+                        </button>
+                        <!-- Ventes du Jour -->
+                        <button @click="openTodaySales()"
+                            class="flex items-center gap-2 px-4 h-12 rounded-xl text-white font-bold text-sm transition-all active:scale-95 whitespace-nowrap"
+                            style="background: linear-gradient(135deg,#0f172a,#1e1b4b); box-shadow: 0 4px 12px rgba(99,102,241,0.3);">
+                            <i class="fas fa-receipt text-indigo-400"></i>
+                            Ventes du jour
+                            <span x-show="todayCount > 0"
+                                class="ml-1 px-2 py-0.5 rounded-full text-[10px] font-black"
+                                style="background:rgba(99,102,241,0.4);"
+                                x-text="todayCount"></span>
                         </button>
                     </div>
                     
@@ -42,7 +54,10 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         <template x-for="product in filteredProducts" :key="product.id">
                             <div @click="addToCart(product)" 
-                                class="bg-white rounded-2xl p-3 shadow-sm border border-transparent hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group active:scale-95">
+                                class="bg-white rounded-2xl p-3 cursor-pointer group active:scale-95 transition-all duration-150"
+                                style="border: 1.5px solid #e2e8f0; box-shadow: 0 2px 8px rgba(15,23,42,0.07);"
+                                @mouseenter="$el.style.cssText='border: 1.5px solid #6366f1; box-shadow: 0 6px 20px rgba(99,102,241,0.18);'"
+                                @mouseleave="$el.style.cssText='border: 1.5px solid #e2e8f0; box-shadow: 0 2px 8px rgba(15,23,42,0.07);'">
                                 <div class="aspect-square rounded-xl bg-gray-50 mb-3 overflow-hidden relative">
                                     <template x-if="product.image_path">
                                         <img :src="'/storage/' + product.image_path" class="w-full h-full object-cover">
@@ -52,9 +67,16 @@
                                             <i class="fas fa-image text-3xl"></i>
                                         </div>
                                     </template>
-                                    <div class="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[10px] font-bold text-gray-600 shadow-sm border border-gray-100">
-                                        Stock: <span :class="product.stock_quantity < 5 ? 'text-rose-500' : 'text-emerald-500'" x-text="product.stock_quantity"></span>
-                                    </div>
+                                    <template x-if="product.is_stockable">
+                                        <div class="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[10px] font-bold text-gray-600 shadow-sm border border-gray-100">
+                                            Stock: <span :class="product.stock_quantity < 5 ? 'text-rose-500' : 'text-emerald-500'" x-text="product.stock_quantity"></span>
+                                        </div>
+                                    </template>
+                                    <template x-if="!product.is_stockable">
+                                        <div class="absolute top-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[10px] font-bold text-indigo-600 shadow-sm border border-indigo-100 flex items-center gap-1">
+                                            <i class="fas fa-infinity text-[8px]"></i> Service
+                                        </div>
+                                    </template>
                                 </div>
                                 <div class="text-sm font-bold text-gray-800 line-clamp-1 mb-1" x-text="product.name"></div>
                                 <div class="flex justify-between items-center mt-1">
@@ -78,8 +100,8 @@
             </div>
 
             <!-- Section DROITE: Panier -->
-            <div class="w-96 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-6 border-b border-gray-50 bg-gray-50/50">
+            <div class="w-96 flex flex-col bg-white rounded-2xl overflow-hidden" style="border: 1.5px solid #cbd5e1; box-shadow: 0 8px 32px rgba(15,23,42,0.12), 0 2px 8px rgba(15,23,42,0.06);">
+                <div class="p-5 border-b bg-gray-50/80" style="border-color: #e2e8f0;">
                     <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Client</label>
                     <select x-model="customerId" class="w-full rounded-xl border-gray-100 bg-white text-sm font-bold focus:border-indigo-500 focus:ring-indigo-200 transition-all px-4 py-2 shadow-sm">
                         <option value="">Client de passage (Comptant)</option>
@@ -140,8 +162,9 @@
                 </div>
 
                 <!-- Totaux & Actions -->
-                <div class="p-6 bg-gray-50 border-t border-gray-100 space-y-4">
-                    <div class="space-y-2                        <div class="flex justify-between text-sm text-gray-500">
+                <div class="p-5 border-t space-y-4" style="border-color: #cbd5e1; background: linear-gradient(to bottom, #f8fafc, #ffffff);">
+                    <div class="space-y-2" style="border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px;">
+                        <div class="flex justify-between text-sm text-gray-500">
                             <span>Sous-total</span>
                             <span x-text="formatCurrency(subtotal)"></span>
                         </div>
@@ -194,67 +217,94 @@
 
         <!-- MODAL: Paiement -->
         <div x-show="showCheckoutModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="showCheckoutModal = false"></div>
-            <div class="bg-white rounded-3xl w-full max-w-md relative shadow-2xl overflow-hidden animate-fade-in-up">
-                <div class="p-8 space-y-8">
+            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="showCheckoutModal = false"></div>
+            <div class="bg-white rounded-3xl w-full max-w-md relative shadow-2xl overflow-hidden animate-fade-in-up"
+                 style="box-shadow: 0 25px 60px rgba(99,102,241,0.25), 0 0 0 1px rgba(99,102,241,0.08);">
+
+                <!-- Header gradient bar -->
+                <div class="h-1.5 w-full" style="background: linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4);"></div>
+
+                <div class="p-8 space-y-6">
+                    <!-- Title -->
                     <div class="text-center">
-                        <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-white text-xl shadow-lg"
+                             style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
                             <i class="fas fa-wallet"></i>
                         </div>
                         <h2 class="text-2xl font-black text-gray-800">Finaliser la vente</h2>
                         <p class="text-gray-400 text-sm mt-1">Sélectionnez le mode de règlement</p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4" :class="customerId ? 'grid-cols-3' : 'grid-cols-2'">
-                        <button @click="paymentMethod = 'cash'" 
-                            :class="paymentMethod === 'cash' ? 'ring-2 ring-indigo-600 bg-indigo-50 text-indigo-700' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'"
-                            class="p-4 rounded-2xl border border-transparent transition-all flex flex-col items-center gap-2 group">
-                            <i class="fas fa-money-bill-wave text-xl group-hover:scale-110 transition-transform"></i>
-                            <span class="font-bold text-[10px] uppercase">Espèces</span>
+                    <!-- Payment methods -->
+                    <div class="grid gap-3" :class="customerId ? 'grid-cols-3' : 'grid-cols-2'">
+                        <button @click="paymentMethod = 'cash'"
+                            :class="paymentMethod === 'cash'
+                                ? 'text-white border-transparent shadow-lg'
+                                : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100'"
+                            :style="paymentMethod === 'cash' ? 'background: linear-gradient(135deg,#6366f1,#8b5cf6); box-shadow: 0 8px 20px rgba(99,102,241,0.35);' : ''"
+                            class="p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-2 group active:scale-95">
+                            <i class="fas fa-money-bill-wave text-2xl group-hover:scale-110 transition-transform"></i>
+                            <span class="font-black text-[11px] uppercase tracking-wider">Espèces</span>
                         </button>
-                        <button @click="paymentMethod = 'card'" 
-                            :class="paymentMethod === 'card' ? 'ring-2 ring-indigo-600 bg-indigo-50 text-indigo-700' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'"
-                            class="p-4 rounded-2xl border border-transparent transition-all flex flex-col items-center gap-2 group">
-                            <i class="fas fa-credit-card text-xl group-hover:scale-110 transition-transform"></i>
-                            <span class="font-bold text-[10px] uppercase">Carte</span>
+
+                        <button @click="paymentMethod = 'card'"
+                            :class="paymentMethod === 'card'
+                                ? 'text-white border-transparent shadow-lg'
+                                : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100'"
+                            :style="paymentMethod === 'card' ? 'background: linear-gradient(135deg,#06b6d4,#0ea5e9); box-shadow: 0 8px 20px rgba(6,182,212,0.35);' : ''"
+                            class="p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-2 group active:scale-95">
+                            <i class="fas fa-credit-card text-2xl group-hover:scale-110 transition-transform"></i>
+                            <span class="font-black text-[11px] uppercase tracking-wider">Carte</span>
                         </button>
+
                         <template x-if="customerId">
-                            <button @click="paymentMethod = 'credit'" 
-                                :class="paymentMethod === 'credit' ? 'ring-2 ring-rose-600 bg-rose-50 text-rose-700' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'"
-                                class="p-4 rounded-2xl border border-transparent transition-all flex flex-col items-center gap-2 group">
-                                <i class="fas fa-book text-xl group-hover:scale-110 transition-transform"></i>
-                                <span class="font-bold text-[10px] uppercase">Crédit</span>
+                            <button @click="paymentMethod = 'credit'"
+                                :class="paymentMethod === 'credit'
+                                    ? 'text-white border-transparent shadow-lg'
+                                    : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100'"
+                                :style="paymentMethod === 'credit' ? 'background: linear-gradient(135deg,#ef4444,#f97316); box-shadow: 0 8px 20px rgba(239,68,68,0.35);' : ''"
+                                class="p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center gap-2 group active:scale-95">
+                                <i class="fas fa-book text-2xl group-hover:scale-110 transition-transform"></i>
+                                <span class="font-black text-[11px] uppercase tracking-wider">Crédit</span>
                             </button>
                         </template>
                     </div>
 
-                    <div class="bg-gray-900 p-6 rounded-2xl text-white space-y-2">
-                        <div class="flex justify-between items-center text-xs text-gray-400 font-bold uppercase tracking-widest">
+                    <!-- Total panel -->
+                    <div class="rounded-2xl p-5 space-y-3 text-white"
+                         style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);">
+                        <div class="flex justify-between items-center text-xs text-white/50 font-bold uppercase tracking-widest">
                             <span>Sous-total</span>
                             <span x-text="formatCurrency(subtotal)"></span>
                         </div>
                         <template x-if="discountValue > 0">
-                            <div class="flex justify-between items-center text-xs text-rose-400 font-bold uppercase tracking-widest">
+                            <div class="flex justify-between items-center text-xs font-bold" style="color: #f87171;">
                                 <span>Remise</span>
                                 <span x-text="'-' + formatCurrency(discountValue)"></span>
                             </div>
                         </template>
-                        <div class="flex justify-between items-center pt-2 border-t border-gray-800">
-                            <span class="text-gray-400 text-sm font-bold uppercase">Total net</span>
-                            <span class="text-2xl font-black" x-text="formatCurrency(total)"></span>
+                        <div class="flex justify-between items-center pt-3 border-t border-white/10">
+                            <span class="text-white/60 text-sm font-bold uppercase tracking-widest">Total net</span>
+                            <span class="text-3xl font-black" style="background: linear-gradient(90deg,#a5b4fc,#7dd3fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent;" x-text="formatCurrency(total)"></span>
                         </div>
                     </div>
 
-                    <div class="flex gap-4">
-                        <button @click="showCheckoutModal = false" class="flex-1 py-4 text-gray-500 font-bold hover:bg-gray-50 rounded-2xl transition-all">
-                            Annuler
+                    <!-- Actions -->
+                    <div class="flex gap-3">
+                        <button @click="showCheckoutModal = false"
+                            class="flex-1 py-3.5 text-gray-500 font-bold hover:bg-gray-50 rounded-2xl transition-all border border-gray-100 text-sm">
+                            <i class="fas fa-times mr-2 text-gray-300"></i>Annuler
                         </button>
                         <button @click="submitOrder()" :disabled="submitting"
-                            class="flex-2 bg-indigo-600 text-white font-black py-4 px-8 rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
+                            class="flex-[2] text-white font-black py-3.5 px-8 rounded-2xl transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+                            style="background: linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow: 0 8px 24px rgba(99,102,241,0.4);">
                             <template x-if="submitting">
                                 <i class="fas fa-spinner fa-spin"></i>
                             </template>
-                            <span>CONFIRMER LA VENTE</span>
+                            <template x-if="!submitting">
+                                <i class="fas fa-check-circle"></i>
+                            </template>
+                            <span x-text="submitting ? 'Traitement...' : 'CONFIRMER LA VENTE'"></span>
                         </button>
                     </div>
                 </div>
@@ -302,6 +352,112 @@
                 </div>
             </div>
         </div>
+
+        <!-- ===== SLIDE-OVER: Ventes du Jour ===== -->
+        <div x-show="showTodayPanel" x-cloak class="fixed inset-0 z-50" style="display:none;">
+            <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" @click="showTodayPanel=false"></div>
+            <div class="absolute right-0 top-0 h-full w-full max-w-lg flex flex-col"
+                 style="background:linear-gradient(180deg,#0f172a 0%,#1a1a2e 100%);box-shadow:-8px 0 40px rgba(0,0,0,0.4);"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="translate-x-full">
+                <div class="flex items-center justify-between p-5 border-b border-white/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);"><i class="fas fa-receipt text-sm"></i></div>
+                        <div>
+                            <h2 class="font-black text-white text-sm">Ventes du Jour</h2>
+                            <p class="text-[10px] text-white/40" x-text="new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})"></p>
+                        </div>
+                    </div>
+                    <button @click="showTodayPanel=false" class="w-8 h-8 rounded-xl text-white/40 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="grid grid-cols-3 gap-3 p-4 border-b border-white/10">
+                    <div class="rounded-xl p-3 text-center" style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);">
+                        <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Ventes</div>
+                        <div class="text-xl font-black text-white" x-text="todayCount"></div>
+                    </div>
+                    <div class="rounded-xl p-3 text-center col-span-2" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);">
+                        <div class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Total du jour</div>
+                        <div class="text-xl font-black text-white" x-text="formatCurrency(todayTotal)"></div>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <template x-if="todayLoading">
+                        <div class="flex flex-col items-center justify-center h-40 gap-3">
+                            <i class="fas fa-spinner fa-spin text-2xl text-indigo-400"></i>
+                            <p class="text-white/40 text-sm">Chargement...</p>
+                        </div>
+                    </template>
+                    <template x-if="!todayLoading && todayOrders.length === 0">
+                        <div class="flex flex-col items-center justify-center h-40 gap-3">
+                            <i class="fas fa-receipt text-4xl text-white/10"></i>
+                            <p class="text-white/40 font-bold">Aucune vente aujourd'hui</p>
+                        </div>
+                    </template>
+                    <template x-for="(order, idx) in todayOrders" :key="order.id">
+                        <div class="rounded-xl overflow-hidden" style="border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);">
+                            <button @click="toggleOrder(idx)" class="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-all">
+                                <div class="w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);">
+                                    <span class="text-[9px] font-black text-indigo-400 uppercase">heure</span>
+                                    <span class="text-sm font-black text-white" x-text="order.time"></span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <span class="font-black text-white text-sm" x-text="'#'+order.id"></span>
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black"
+                                            :class="{'bg-emerald-500/20 text-emerald-400':order.payment_method==='cash','bg-blue-500/20 text-blue-400':order.payment_method==='card','bg-rose-500/20 text-rose-400':order.payment_method==='credit'}"
+                                            x-text="order.payment_method==='cash'?'Espèces':(order.payment_method==='card'?'Carte':'Crédit')"></span>
+                                    </div>
+                                    <div class="text-[10px] text-white/40" x-text="order.cashier+(order.customer?' · '+order.customer:'')"></div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <div class="font-black text-white" x-text="formatCurrency(order.total)"></div>
+                                    <div class="text-[10px] text-white/30" x-text="order.items.length+' article(s)'"></div>
+                                </div>
+                                <i class="fas text-white/20 text-xs ml-1" :class="expandedOrder===idx?'fa-chevron-up':'fa-chevron-down'"></i>
+                            </button>
+                            <div x-show="expandedOrder===idx"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 -translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 class="border-t" style="border-color:rgba(255,255,255,0.06);">
+                                <div class="px-4 py-2 space-y-2">
+                                    <template x-for="item in order.items" :key="item.name">
+                                        <div class="flex items-center justify-between py-1.5">
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black text-indigo-400" style="background:rgba(99,102,241,0.15);" x-text="item.qty+'x'"></span>
+                                                <span class="text-white/70 text-xs font-semibold" x-text="item.name"></span>
+                                            </div>
+                                            <span class="text-xs font-black text-white" x-text="formatCurrency(item.subtotal)"></span>
+                                        </div>
+                                    </template>
+                                    <template x-if="order.discount > 0">
+                                        <div class="flex justify-between pt-1 border-t" style="border-color:rgba(255,255,255,0.06);">
+                                            <span class="text-xs text-rose-400 font-bold">Remise</span>
+                                            <span class="text-xs font-black text-rose-400" x-text="'-'+formatCurrency(order.discount)"></span>
+                                        </div>
+                                    </template>
+                                    <div class="flex justify-between pt-1.5 border-t" style="border-color:rgba(255,255,255,0.1);">
+                                        <span class="text-xs font-black text-white/50 uppercase tracking-wider">Total</span>
+                                        <span class="text-sm font-black text-emerald-400" x-text="formatCurrency(order.total)"></span>
+                                    </div>
+                                    <div class="pt-1 pb-1">
+                                        <a :href="'/orders/'+order.id+'/print'" target="_blank"
+                                            class="flex items-center justify-center gap-2 w-full py-2 rounded-xl text-[10px] font-black text-indigo-400 hover:text-white transition-all"
+                                            style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);">
+                                            <i class="fas fa-print"></i> Imprimer le ticket
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -324,6 +480,14 @@
                 submitting: false,
                 showHelpModal: false,
                 currency: "{{ \App\Models\Setting::get('currency', 'DT') }}",
+
+                // Ventes du jour
+                showTodayPanel: false,
+                todayLoading: false,
+                todayOrders: [],
+                todayCount: 0,
+                todayTotal: 0,
+                expandedOrder: null,
 
                 init() {
                     this.filteredProducts = this.products;
@@ -368,10 +532,64 @@
                     });
                 },
 
+                handleBarcodeEnter() {
+                    const searchVal = this.search.trim();
+                    if (!searchVal) return;
+
+                    // Try to find exact barcode match first
+                    let exactMatch = this.products.find(p => p.barcode === searchVal);
+                    
+                    // If no exact barcode match, check if there's exactly 1 filtered product
+                    if (!exactMatch && this.filteredProducts.length === 1) {
+                        exactMatch = this.filteredProducts[0];
+                    }
+
+                    if (exactMatch) {
+                        this.playSound('success');
+                        this.addToCart(exactMatch);
+                        this.search = '';
+                        this.filterProducts();
+                    } else {
+                        this.playSound('error');
+                        alert("Aucun produit ne correspond à : " + searchVal);
+                        this.search = '';
+                        this.filterProducts();
+                    }
+                },
+
+                playSound(type) {
+                    try {
+                        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        
+                        if (type === 'success') {
+                            // Petit 'bip' aigu et court
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(800, ctx.currentTime);
+                            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                            osc.start();
+                            osc.stop(ctx.currentTime + 0.1); 
+                        } else if (type === 'error') {
+                            // Son grave et plus long pour l'erreur
+                            osc.type = 'sawtooth';
+                            osc.frequency.setValueAtTime(250, ctx.currentTime);
+                            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                            osc.start();
+                            osc.stop(ctx.currentTime + 0.3); 
+                        }
+                    } catch (e) {
+                        console.warn("Audio not supported or blocked");
+                    }
+                },
+
                 addToCart(product) {
                     const existingIndex = this.cart.findIndex(item => item.id === product.id);
                     if (existingIndex > -1) {
-                        if (this.cart[existingIndex].quantity < product.stock_quantity) {
+                        if (!product.is_stockable || this.cart[existingIndex].quantity < product.stock_quantity) {
                             this.cart[existingIndex].quantity++;
                         } else {
                             alert('Stock maximum atteint pour ce produit !');
@@ -384,7 +602,8 @@
                             quantity: 1,
                             unit: product.unit,
                             image_path: product.image_path,
-                            stock_quantity: product.stock_quantity
+                            stock_quantity: product.stock_quantity,
+                            is_stockable: product.is_stockable
                         });
                     }
                     this.calculateTotals();
@@ -397,7 +616,7 @@
 
                 incrementQty(index) {
                     const step = ['kg', 'g', 'l', 'ml'].includes(this.cart[index].unit) ? 0.1 : 1;
-                    if (this.cart[index].quantity + step <= this.cart[index].stock_quantity) {
+                    if (!this.cart[index].is_stockable || this.cart[index].quantity + step <= this.cart[index].stock_quantity) {
                         this.cart[index].quantity = parseFloat((parseFloat(this.cart[index].quantity) + step).toFixed(3));
                         this.calculateTotals();
                     }
@@ -480,10 +699,34 @@
                         this.submitting = false;
                         this.showCheckoutModal = false;
                     }
+                },
+
+                openTodaySales() {
+                    this.showTodayPanel = true;
+                    this.expandedOrder  = null;
+                    this.todayLoading   = true;
+                    fetch('/orders-today', {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        this.todayOrders  = data.orders;
+                        this.todayCount   = data.count;
+                        this.todayTotal   = data.total;
+                        this.todayLoading = false;
+                    })
+                    .catch(() => { this.todayLoading = false; });
+                },
+
+                toggleOrder(idx) {
+                    this.expandedOrder = this.expandedOrder === idx ? null : idx;
                 }
             }
         }
-    </script></script>
+    </script>
 
     <style>
         [x-cloak] { display: none !important; }
@@ -499,4 +742,6 @@
         }
         .animate-fade-in-up { animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     </style>
+
 </x-app-layout>
+

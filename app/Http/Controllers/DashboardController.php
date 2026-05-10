@@ -15,14 +15,28 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if (!auth()->user()->hasRole('admin')) {
+            return redirect()->route('pos.index');
+        }
+
         $today = Carbon::today();
         
         // Stats du jour
-        $salesToday = Order::whereDate('created_at', $today)->sum('total_amount');
-        $ordersCountToday = Order::whereDate('created_at', $today)->count();
+        $salesToday = Order::whereDate('created_at', $today)
+            ->where('status', 'completed')
+            ->where('type', '!=', 'refund')
+            ->sum('total_amount');
+            
+        $ordersCountToday = Order::whereDate('created_at', $today)
+            ->where('status', 'completed')
+            ->where('type', '!=', 'refund')
+            ->count();
         
         // Stats du mois
-        $salesThisMonth = Order::whereMonth('created_at', Carbon::now()->month)->sum('total_amount');
+        $salesThisMonth = Order::whereMonth('created_at', Carbon::now()->month)
+            ->where('status', 'completed')
+            ->where('type', '!=', 'refund')
+            ->sum('total_amount');
         
         // Dépenses
         $expensesToday = \App\Models\Expense::whereDate('entry_date', $today)->sum('amount');
@@ -37,7 +51,10 @@ class DashboardController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
             $chartLabels[] = $date->translatedFormat('d M');
-            $chartSales[] = (float) Order::whereDate('created_at', $date)->sum('total_amount');
+            $chartSales[] = (float) Order::whereDate('created_at', $date)
+                ->where('status', 'completed')
+                ->where('type', '!=', 'refund')
+                ->sum('total_amount');
         }
 
         // Répartition par catégorie
@@ -59,7 +76,11 @@ class DashboardController extends Controller
         $lowStockProducts = Product::where('stock_quantity', '<', 5)->get();
         
         // Dernières ventes
-        $recentOrders = Order::with('user')->latest()->take(5)->get();
+        $recentOrders = Order::with('user')
+            ->where('status', 'completed')
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('dashboard', compact(
             'salesToday', 

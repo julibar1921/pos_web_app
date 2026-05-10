@@ -64,9 +64,9 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-bold text-indigo-600">
-                                    {{ number_format($product->selling_price, 2) }} {{ \App\Models\Setting::get('currency', 'DA') }}
+                                    {{ number_format($product->selling_price, 3) }} {{ \App\Models\Setting::get('currency', 'DT') }}
                                 </div>
-                                <div class="text-[10px] text-gray-400">Achat: {{ number_format($product->purchase_price, 2) }}</div>
+                                <div class="text-[10px] text-gray-400">Achat: {{ number_format($product->purchase_price, 3) }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-2">
@@ -83,9 +83,11 @@
                                     <a href="{{ route('products.label', $product) }}" target="_blank" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors" title="Imprimer Étiquette">
                                         <i class="fas fa-barcode"></i>
                                     </a>
-                                    <button @click="$dispatch('open-modal', 'adjust-stock-{{ $product->id }}')" class="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-colors" title="Ajuster le stock">
+                                    @role('admin')
+                                    <button @click="$dispatch('open-modal', 'adjust-stock-{{ $product->id }}')" class="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-colors" title="Ajuster le stock (Admin)">
                                         <i class="fas fa-cubes"></i>
                                     </button>
+                                    @endrole
                                     @can('edit products')
                                     <a href="{{ route('products.edit', $product) }}" class="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors" title="Modifier">
                                         <i class="fas fa-edit"></i>
@@ -102,12 +104,23 @@
                                     @endcan
                                 </div>
                                 
-                                <!-- Modal Ajustement Stock -->
+                                @role('admin')
+                                <!-- Modal Ajustement Stock — Admin seulement -->
                                 <x-modal name="adjust-stock-{{ $product->id }}" focusable>
                                     <form method="post" action="{{ route('stock.adjust', $product) }}" class="p-8 text-left">
                                         @csrf
-                                        <h2 class="text-2xl font-black text-gray-800 mb-2">Ajuster le stock</h2>
-                                        <p class="text-sm text-gray-500 mb-6">{{ $product->name }} - Actuel: <span class="font-bold">{{ $product->stock_quantity }}</span></p>
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="p-2 bg-emerald-100 rounded-lg">
+                                                <i class="fas fa-cubes text-emerald-600"></i>
+                                            </div>
+                                            <h2 class="text-2xl font-black text-gray-800">Ajuster le stock</h2>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mb-1">{{ $product->name }}</p>
+                                        <p class="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-6">
+                                            <i class="fas fa-shield-alt mr-1"></i>
+                                            Action réservée à l'administrateur — tracée dans l'historique de stock.
+                                        </p>
+                                        <p class="text-sm text-gray-500 mb-6">Stock actuel: <span class="font-bold text-gray-800">{{ $product->stock_quantity }} {{ $product->unit }}</span></p>
 
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
@@ -124,19 +137,20 @@
                                                 </select>
                                             </div>
                                             <div class="md:col-span-2">
-                                                <x-input-label for="notes" value="Notes / Raison" />
-                                                <textarea name="notes" class="mt-1 block w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="Expliquez brièvement le changement..."></textarea>
+                                                <x-input-label for="notes" value="Notes / Raison (obligatoire pour traçabilité)" />
+                                                <textarea name="notes" required class="mt-1 block w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="Expliquez brièvement le changement..."></textarea>
                                             </div>
                                         </div>
 
                                         <div class="mt-8 flex justify-end gap-3">
                                             <x-secondary-button x-on:click="$dispatch('close')">Annuler</x-secondary-button>
                                             <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
-                                                Enregistrer le mouvement
+                                                <i class="fas fa-save mr-2"></i>Enregistrer le mouvement
                                             </button>
                                         </div>
                                     </form>
                                 </x-modal>
+                                @endrole
                             </td>
                         </tr>
                         @empty

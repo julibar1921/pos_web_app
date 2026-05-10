@@ -83,6 +83,18 @@
                                 placeholder="0.00">
                         </div>
                     </div>
+                    <div class="px-8 pb-6">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">Gestion du stock</h4>
+                                <p class="text-xs text-gray-500 mt-0.5">Désactivez pour les services ou produits non quantifiables</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_stockable" value="1" class="sr-only peer" {{ $product->is_stockable ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
